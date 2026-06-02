@@ -1,9 +1,10 @@
+using ExitGames.Client.Photon.StructWrapping;
 using Fusion;
 using UnityEngine;
 
 public class LocalInputs : NetworkBehaviour
 {
-    public static LocalInputs instance;
+    public static LocalInputs instance_for_input_auth;
 
     NetworkPlayerInputData inputData;
 
@@ -11,7 +12,7 @@ public class LocalInputs : NetworkBehaviour
     {
         if (Object.HasInputAuthority)
         {
-            instance = this;
+            instance_for_input_auth = this;
             inputData = new NetworkPlayerInputData();
             Debug.Log("Cliente Local Input Instancia creada");
             return;
@@ -21,7 +22,9 @@ public class LocalInputs : NetworkBehaviour
     }
 
     Vector3 dir = Vector3.zero;
-    bool isFirePressed = false;
+    bool isFirePressed1 = false;
+    bool isFirePressed2 = false;
+    bool isJumping = false;
 
     private void Update() // solo para levantar inputs
     {
@@ -30,16 +33,24 @@ public class LocalInputs : NetworkBehaviour
 
         Debug.Log("Direction: " + dir);
 
-        if (Input.GetButtonDown("Fire1")) isFirePressed = true;
+        isFirePressed1 |= Input.GetButtonDown("Fire1");
+        isFirePressed2 |= Input.GetButtonDown("Fire2");
 
-        //inputData.isFirePressed |= Input.GetButtonDown("Fire1");
+        isJumping |= Input.GetButtonDown("Jump");
     }
 
-    public NetworkPlayerInputData GetInputData()
+    public NetworkPlayerInputData GetInputData() // en el tick del servidor, solo cuando el lo quiera pasar a buscar
     {
-        inputData = new NetworkPlayerInputData(dir, isFirePressed);
+        inputData = new NetworkPlayerInputData();
 
-        isFirePressed = false;
+        inputData.direction = dir;
+        inputData.buttons.Set(NetworkPlayerInputData.IsFirePressed0, isFirePressed1);
+        inputData.buttons.Set(NetworkPlayerInputData.IsFirePressed1, isFirePressed2);
+        inputData.buttons.Set(NetworkPlayerInputData.IsJumping, isJumping);
+
+        isFirePressed1 = false;
+        isFirePressed2 = false;
+        isJumping = false;
 
         return inputData;
     }

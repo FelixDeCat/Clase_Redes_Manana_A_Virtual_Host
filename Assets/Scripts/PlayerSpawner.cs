@@ -38,9 +38,9 @@ public class PlayerSpawner : NetworkBehaviour, INetworkRunnerCallbacks
     }
     void INetworkRunnerCallbacks.OnInput(NetworkRunner runner, NetworkInput input) 
     {
-        if (LocalInputs.instance) // en todos los que tengan la autoridad de Input (Singleton único para InputAuth)
+        if (LocalInputs.instance_for_input_auth) // en todos los que tengan la autoridad de Input (Singleton único para InputAuth)
         {
-            NetworkPlayerInputData inputdata = LocalInputs.instance.GetInputData();
+            NetworkPlayerInputData inputdata = LocalInputs.instance_for_input_auth.GetInputData();
             input.Set(inputdata);
         }
     }

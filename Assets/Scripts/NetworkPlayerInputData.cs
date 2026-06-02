@@ -1,22 +1,18 @@
 using Fusion;
 using UnityEngine;
 
+public enum ButtonType
+{
+    isFirePressed
+}
 public struct NetworkPlayerInputData : INetworkInput
 {
+    public const byte IsFirePressed0 = 0;
+    public const byte IsFirePressed1 = 1;
+    public const byte IsJumping = 2;
+
     public Vector3 direction;
-    public bool isFirePressed;
+    public Vector3 dirToShoot;
 
-    public NetworkPlayerInputData(Vector3 _dir, bool _isFirePressed)
-    {
-        direction = _dir;
-        isFirePressed = _isFirePressed;
-    }
-
-    public static NetworkPlayerInputData Default
-    {
-        get
-        {
-            return new NetworkPlayerInputData(Vector3.zero, false);
-        }
-    }
+    public NetworkButtons buttons;
 }

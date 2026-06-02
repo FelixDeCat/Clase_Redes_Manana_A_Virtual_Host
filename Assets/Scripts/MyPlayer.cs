@@ -1,26 +1,69 @@
 using Fusion;
+using Fusion.Addons.Physics;
 using UnityEngine;
 
 public class MyPlayer : NetworkBehaviour
 {
     [SerializeField] bool isFirePressed;
-    [SerializeField] float speed = 5f;
+    [SerializeField] float speed = 100f;
 
+    [SerializeField] float jumpForce = 5f;
+    
+    [SerializeField] NetworkRigidbody3D rig;
 
-    public override void FixedUpdateNetwork() // Lado del Host
+    [SerializeField] Transform ShootPoint;
+    [SerializeField] Bullet bullet;
+
+    Vector3 move = Vector3.zero;
+    float yAxis = 0;
+    public override void FixedUpdateNetwork() /// T I C K
     {
-        //var input = GetInput<NetworkPlayerInputData>();
+        /// Prediction: Es cuando el cliente, sigue ejecutando su codigo, pero espera un snapshot para ser corregido
+        /// Rollback: Es cuando el cliente recibe un Snapshot incorrecto, "No hay reconciliacion", y este resimula hasta el snapshotCorrecto
 
-        // if (input != null)
-        // {
-                // input.Value.isFirePressed
-        // }
+        /// Host    100 101 102 103
+        /// Cli     100 101 102 103
+
 
         if (GetInput(out NetworkPlayerInputData data))
         {
-            transform.position = transform.position + data.direction * Runner.DeltaTime * speed;
+            // transform.position = transform.position + data.direction * Runner.DeltaTime * speed;
 
-            isFirePressed = data.isFirePressed;
+            yAxis = rig.Rigidbody.linearVelocity.y;
+            move = data.direction * Runner.DeltaTime * speed;
+            
+            move.y = yAxis;
+
+            rig.Rigidbody.linearVelocity = move;
+
+            if (HasStateAuthority)
+            {
+                if (data.buttons.IsSet(NetworkPlayerInputData.IsFirePressed0))
+                {
+                    Runner.Spawn(
+                        bullet,
+                        ShootPoint.position,
+                        ShootPoint.rotation,
+                        onBeforeSpawned:
+                        (r,o) =>
+                        {
+                            o.GetComponent<Bullet>().Init();
+                        }
+                        );
+                }
+            }
+            
+
+            if (data.buttons.IsSet(NetworkPlayerInputData.IsFirePressed1))
+            {
+                Debug.Log("Fire 1");
+                // ejecuto habilidad
+            }
+
+            if (data.buttons.IsSet(NetworkPlayerInputData.IsJumping))
+            {
+                rig.Rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
+            }
 
             
         }
