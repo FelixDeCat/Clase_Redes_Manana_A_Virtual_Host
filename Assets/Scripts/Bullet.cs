@@ -7,9 +7,13 @@ public class Bullet : NetworkBehaviour
     [Networked] TickTimer _lifetime { get; set; }
     [SerializeField] float _lifeTimeToDeath;
 
-    public void Init()
+    public void Init() // On BeforeSpawned
     {
         _lifetime = TickTimer.CreateFromSeconds(Runner, _lifeTimeToDeath);
+    }
+    public override void Spawned()
+    {
+        base.Spawned();
     }
 
     public override void FixedUpdateNetwork()
@@ -22,5 +26,17 @@ public class Bullet : NetworkBehaviour
         {
             transform.position += transform.forward * speed * Runner.DeltaTime;
         }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!HasStateAuthority) return;
+
+        if (other.TryGetComponent(out HealthSystem _hs))
+        {
+            _hs.DoDamage(20);
+        }
+
+        Runner.Despawn(Object);
     }
 }

@@ -12,7 +12,7 @@ public struct NetworkPlayerInputData : INetworkInput
     public const byte IsJumping = 2;
 
     public Vector3 direction;
-    public Vector3 dirToShoot;
+    public Vector3 dirToLook;
 
     public NetworkButtons buttons;
 }

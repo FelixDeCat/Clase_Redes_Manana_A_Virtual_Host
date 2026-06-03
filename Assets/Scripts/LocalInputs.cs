@@ -22,9 +22,12 @@ public class LocalInputs : NetworkBehaviour
     }
 
     Vector3 dir = Vector3.zero;
+    Vector3 dirLook = Vector3.zero;
     bool isFirePressed1 = false;
     bool isFirePressed2 = false;
     bool isJumping = false;
+
+    [SerializeField] LayerMask viewMask;
 
     private void Update() // solo para levantar inputs
     {
@@ -32,6 +35,15 @@ public class LocalInputs : NetworkBehaviour
         dir.z = Input.GetAxis("Vertical");
 
         Debug.Log("Direction: " + dir);
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, float.MaxValue, viewMask))
+        {
+            dirLook = hit.point - transform.position;
+        }
+
 
         isFirePressed1 |= Input.GetButtonDown("Fire1");
         isFirePressed2 |= Input.GetButtonDown("Fire2");
@@ -44,6 +56,7 @@ public class LocalInputs : NetworkBehaviour
         inputData = new NetworkPlayerInputData();
 
         inputData.direction = dir;
+        inputData.dirToLook = dirLook;
         inputData.buttons.Set(NetworkPlayerInputData.IsFirePressed0, isFirePressed1);
         inputData.buttons.Set(NetworkPlayerInputData.IsFirePressed1, isFirePressed2);
         inputData.buttons.Set(NetworkPlayerInputData.IsJumping, isJumping);

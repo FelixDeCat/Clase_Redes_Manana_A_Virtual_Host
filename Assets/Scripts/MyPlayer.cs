@@ -14,6 +14,10 @@ public class MyPlayer : NetworkBehaviour
     [SerializeField] Transform ShootPoint;
     [SerializeField] Bullet bullet;
 
+    [SerializeField] Transform rot_root;
+
+    [SerializeField] float lookLerpQuant = 0.05f;
+
     Vector3 move = Vector3.zero;
     float yAxis = 0;
     public override void FixedUpdateNetwork() /// T I C K
@@ -30,11 +34,14 @@ public class MyPlayer : NetworkBehaviour
             // transform.position = transform.position + data.direction * Runner.DeltaTime * speed;
 
             yAxis = rig.Rigidbody.linearVelocity.y;
-            move = data.direction * Runner.DeltaTime * speed;
-            
+            move = data.direction.normalized * Runner.DeltaTime * speed;
             move.y = yAxis;
 
             rig.Rigidbody.linearVelocity = move;
+
+            Vector3 toLook = data.dirToLook;
+
+            rot_root.rotation = Quaternion.Lerp(rot_root.rotation, Quaternion.LookRotation(toLook), lookLerpQuant);
 
             if (HasStateAuthority)
             {

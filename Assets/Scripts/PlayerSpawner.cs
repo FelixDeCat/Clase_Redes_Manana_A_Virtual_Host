@@ -46,11 +46,6 @@ public class PlayerSpawner : NetworkBehaviour, INetworkRunnerCallbacks
     }
 
 
-
-
-
-
-
     void INetworkRunnerCallbacks.OnConnectedToServer(NetworkRunner runner) { }
     void INetworkRunnerCallbacks.OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
     void INetworkRunnerCallbacks.OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }

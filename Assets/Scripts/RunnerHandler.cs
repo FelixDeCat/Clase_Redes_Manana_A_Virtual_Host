@@ -1,9 +1,11 @@
 using Fusion;
+using Fusion.Photon.Realtime;
 using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
 using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RunnerHandler : MonoBehaviour, INetworkRunnerCallbacks
 {
@@ -42,7 +44,7 @@ public class RunnerHandler : MonoBehaviour, INetworkRunnerCallbacks
 
     async void JoinSessionLobby(string _LobbyName)
     {
-        
+       
         var result = await _runner.JoinSessionLobby(SessionLobby.Custom, _LobbyName);
 
         if (result.Ok)
@@ -101,6 +103,14 @@ public class RunnerHandler : MonoBehaviour, INetworkRunnerCallbacks
         CreateGame(GameMode.Client, sessionName, 1);
     }
 
+    void INetworkRunnerCallbacks.OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) 
+    {
+        runner.Shutdown();
+    }
+    void INetworkRunnerCallbacks.OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
+    {
+        SceneManager.LoadScene(0);
+    }
 
     public void SubscribeToSessionLisUpdate(Action<List<SessionInfo>> _callback)
     {
@@ -115,8 +125,6 @@ public class RunnerHandler : MonoBehaviour, INetworkRunnerCallbacks
     void INetworkRunnerCallbacks.OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
     void INetworkRunnerCallbacks.OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }
     void INetworkRunnerCallbacks.OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
-    void INetworkRunnerCallbacks.OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
-    void INetworkRunnerCallbacks.OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
     void INetworkRunnerCallbacks.OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
     void INetworkRunnerCallbacks.OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
     void INetworkRunnerCallbacks.OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
