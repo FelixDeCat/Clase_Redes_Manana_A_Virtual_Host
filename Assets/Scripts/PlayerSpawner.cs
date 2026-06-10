@@ -25,6 +25,16 @@ public class PlayerSpawner : NetworkBehaviour, INetworkRunnerCallbacks
         {
             players.Add(player, obj);
         }
+
+
+        foreach (var item in players.Values)
+        {
+            if (item.TryGetBehaviour(out MyPlayer p))
+            {
+                p.RPC_OnChangeName();
+            }
+        }
+        
     }
     void INetworkRunnerCallbacks.OnPlayerLeft(NetworkRunner runner, PlayerRef player) //servers
     {

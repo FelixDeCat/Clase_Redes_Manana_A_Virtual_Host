@@ -1,4 +1,5 @@
 using System;
+using System.Xml.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,6 +34,10 @@ public class NetworkUI : MonoBehaviour
     [SerializeField] CanvasGroup sessionListGroup;
     [SerializeField] SessionListUI sessionList;
 
+    [Header("Nickename")]
+    [SerializeField] TMP_InputField field;
+    [SerializeField] TextMeshProUGUI field_placeHolder;
+
 
     private void Awake()
     {
@@ -65,6 +70,17 @@ public class NetworkUI : MonoBehaviour
 
         // Client
         handler.SubscribeToSessionLisUpdate(sessionList.OnListUpdate);
+
+        field.onValueChanged.AddListener(OnChangeInputField);
+        field_placeHolder.text = PlayerPrefs.GetString("nickname");
+
+    }
+
+    public void OnChangeInputField(string _name)
+    {
+        Debug.Log("OnChange");
+        PlayerPrefs.SetString("nickname", _name);
+        PlayerPrefs.Save();
     }
 
 
