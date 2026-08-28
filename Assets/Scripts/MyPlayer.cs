@@ -9,7 +9,7 @@ public class MyPlayer : NetworkBehaviour
     [SerializeField] float speed = 100f;
 
     [SerializeField] float jumpForce = 5f;
-    
+
     [SerializeField] NetworkRigidbody3D rig;
 
     [SerializeField] Transform ShootPoint;

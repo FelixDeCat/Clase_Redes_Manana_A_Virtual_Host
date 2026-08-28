@@ -10,13 +10,25 @@ public class HealthSystem : NetworkBehaviour
     [SerializeField] Image lifebar;
     [SerializeField] Image bkg;
 
+    [Networked, OnChangedRender(nameof(OnChangeState))] NetworkBool isAlive { get; set; }
+
     public override void Spawned()
     {
         health = maxLife;
     }
 
+    void OnChangeState()
+    {
+        // GameManager.Instace.PlayerDeath(this);
+    }
+
     void OnChange_Health()
     {
+        if (Object.HasInputAuthority)
+        {
+            UIManager.Instance.RefreshLife(health, maxLife);
+        }
+
         if (health == maxLife || health == 0)
         {
             lifebar.enabled = false;
@@ -27,7 +39,6 @@ public class HealthSystem : NetworkBehaviour
             bkg.enabled = true;
             lifebar.enabled = true;
             lifebar.fillAmount = (float)health / maxLife;
-
         }
     }
 
@@ -50,6 +61,8 @@ public class HealthSystem : NetworkBehaviour
 
     void Death()
     {
+        isAlive = false;
+
         if (!HasInputAuthority) // solamente los objetos en los peers que ESPECIFICAMENTE no son Host
         {
             Runner.Disconnect(Object.InputAuthority);
